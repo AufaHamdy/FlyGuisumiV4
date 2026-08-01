@@ -128,11 +128,25 @@ mini2.Visible = false
 
 local defaultSpeeds = 1
 local speeds = defaultSpeeds
+local defaultWalkSpeed
+local defaultJumpPower
 
 local speaker = game:GetService("Players").LocalPlayer
 
 local chr = game.Players.LocalPlayer.Character
 local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+
+local function updateDefaultSettings(char)
+	local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		defaultWalkSpeed = humanoid.WalkSpeed
+		defaultJumpPower = humanoid.JumpPower
+	end
+end
+
+if chr and hum then
+	updateDefaultSettings(chr)
+end
 
 nowe = false
 
@@ -148,11 +162,45 @@ Frame.Draggable = true
 local UIS = game:GetService("UserInputService")
 local flyBoostActive = false
 
+local function resetFlySettings()
+	local player = game.Players.LocalPlayer
+	local char = player.Character
+	if not char then
+		return
+	end
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	if hum then
+		hum.WalkSpeed = defaultWalkSpeed
+		hum.JumpPower = defaultJumpPower
+		hum.PlatformStand = false
+		hum.AutoRotate = true
+	end
+	if hrp then
+		hrp.Velocity = Vector3.new(0,0,0)
+		hrp.RotVelocity = Vector3.new(0,0,0)
+	end
+	for _, obj in ipairs(char:GetDescendants()) do
+		if obj:IsA("BodyVelocity") or obj:IsA("BodyGyro") then
+			obj:Destroy()
+		end
+	end
+	flyBoostActive = false
+	tpwalking = false
+	speeds = defaultSpeeds
+	speed.Text = speeds
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = "FLY GUI V3";
+		Text = "Fly nonaktif. Setelan kembali normal.";
+		Duration = 4;
+	})
+end
+
 local function toggleFly()
 
 	if nowe == true then
+		resetFlySettings()
 		nowe = false
-		flyBoostActive = false
 
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing,true)
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown,true)
@@ -170,9 +218,6 @@ local function toggleFly()
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics,true)
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming,true)
 		speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
-		-- reset to default when fly is turned off
-		speeds = defaultSpeeds
-		speed.Text = speeds
 	else 
 		nowe = true
 
@@ -463,9 +508,13 @@ end)
 
 game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function(char)
 	wait(0.7)
-	game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
-	game.Players.LocalPlayer.Character.Animate.Disabled = false
-
+	updateDefaultSettings(char)
+	resetFlySettings()
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.PlatformStand = false
+		humanoid.Animate.Disabled = false
+	end
 end)
 
 

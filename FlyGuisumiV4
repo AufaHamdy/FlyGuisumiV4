@@ -146,6 +146,64 @@ Frame.Active = true -- main = gui
 Frame.Draggable = true
 
 local UIS = game:GetService("UserInputService")
+local ctrl = {f = 0, b = 0, l = 0, r = 0}
+local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+local flyControlConnection
+local flyControlEndedConnection
+
+local function bindFlyControls()
+	if flyControlConnection then
+		return
+	end
+
+	flyControlConnection = UIS.InputBegan:Connect(function(input, gameProcessed)
+		if gameProcessed then
+			return
+		end
+
+		if input.UserInputType == Enum.UserInputType.Keyboard then
+			if input.KeyCode == Enum.KeyCode.W then
+				ctrl.f = 1
+			elseif input.KeyCode == Enum.KeyCode.S then
+				ctrl.b = -1
+			elseif input.KeyCode == Enum.KeyCode.A then
+				ctrl.l = -1
+			elseif input.KeyCode == Enum.KeyCode.D then
+				ctrl.r = 1
+			end
+		end
+	end)
+
+	flyControlEndedConnection = UIS.InputEnded:Connect(function(input, gameProcessed)
+		if gameProcessed then
+			return
+		end
+
+		if input.UserInputType == Enum.UserInputType.Keyboard then
+			if input.KeyCode == Enum.KeyCode.W then
+				ctrl.f = 0
+			elseif input.KeyCode == Enum.KeyCode.S then
+				ctrl.b = 0
+			elseif input.KeyCode == Enum.KeyCode.A then
+				ctrl.l = 0
+			elseif input.KeyCode == Enum.KeyCode.D then
+				ctrl.r = 0
+			end
+		end
+	end)
+end
+
+local function unbindFlyControls()
+	if flyControlConnection then
+		flyControlConnection:Disconnect()
+		flyControlConnection = nil
+	end
+	if flyControlEndedConnection then
+		flyControlEndedConnection:Disconnect()
+		flyControlEndedConnection = nil
+	end
+end
+
 local function respawnCharacter()
 	local player = game.Players.LocalPlayer
 	if player and player.Character then
@@ -161,7 +219,7 @@ local function toggleFly()
 		return
 	else 
 		nowe = true
-
+		bindFlyControls()
 
 
 		for i = 1, speeds do
@@ -217,8 +275,8 @@ local function toggleFly()
 		local torso = plr.Character.Torso
 		local flying = true
 		local deb = true
-		local ctrl = {f = 0, b = 0, l = 0, r = 0}
-		local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+		ctrl = {f = 0, b = 0, l = 0, r = 0}
+		lastctrl = {f = 0, b = 0, l = 0, r = 0}
 		local maxspeed = 50
 		local speed = 0
 
@@ -255,7 +313,7 @@ local function toggleFly()
 			elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
 				newVelocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
 			else
-				newVelocity = Vector3.new(0,0,0)
+				newVelocity = Vector3.new(0,0.1,0)
 			end
 
 			bv.velocity = newVelocity
@@ -279,8 +337,8 @@ local function toggleFly()
 		local UpperTorso = plr.Character.UpperTorso
 		local flying = true
 		local deb = true
-		local ctrl = {f = 0, b = 0, l = 0, r = 0}
-		local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+		ctrl = {f = 0, b = 0, l = 0, r = 0}
+		lastctrl = {f = 0, b = 0, l = 0, r = 0}
 		local maxspeed = 50
 		local speed = 0
 
@@ -317,7 +375,7 @@ local function toggleFly()
 			elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
 				newVelocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
 			else
-				newVelocity = Vector3.new(0,0,0)
+				newVelocity = Vector3.new(0,0.1,0)
 			end
 
 			bv.velocity = newVelocity
@@ -332,6 +390,7 @@ local function toggleFly()
 		plr.Character.Humanoid.PlatformStand = false
 		game.Players.LocalPlayer.Character.Animate.Disabled = false
 		tpwalking = false
+		unbindFlyControls()
 
 
 

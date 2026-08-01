@@ -245,11 +245,6 @@ local function toggleFly()
 		while nowe == true or game:GetService("Players").LocalPlayer.Character.Humanoid.Health == 0 do
 			game:GetService("RunService").RenderStepped:Wait()
 
-			if flyBoostActive then
-				bv.velocity = bv.velocity + Vector3.new(0, 4, 0)
-				flyBoostActive = false
-			end
-
 			if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
 				speed = speed+.5+(speed/maxspeed)
 				if speed > maxspeed then
@@ -261,14 +256,22 @@ local function toggleFly()
 					speed = 0
 				end
 			end
+
+			local newVelocity
 			if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-				bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+				newVelocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
 				lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
 			elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-				bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+				newVelocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
 			else
-				bv.velocity = Vector3.new(0,0,0)
+				newVelocity = Vector3.new(0,0,0)
 			end
+
+			if flyBoostActive then
+				newVelocity = newVelocity + Vector3.new(0, 4, 0)
+				flyBoostActive = false
+			end
+			bv.velocity = newVelocity
 			--	game.Players.LocalPlayer.Character.Animate.Disabled = true
 			bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
 		end
@@ -308,11 +311,6 @@ local function toggleFly()
 		while nowe == true or game:GetService("Players").LocalPlayer.Character.Humanoid.Health == 0 do
 			wait()
 
-			if flyBoostActive then
-				bv.velocity = bv.velocity + Vector3.new(0, 4, 0)
-				flyBoostActive = false
-			end
-
 			if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
 				speed = speed+.5+(speed/maxspeed)
 				if speed > maxspeed then
@@ -324,14 +322,22 @@ local function toggleFly()
 					speed = 0
 				end
 			end
+
+			local newVelocity
 			if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-				bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+				newVelocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
 				lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
 			elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-				bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+				newVelocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
 			else
-				bv.velocity = Vector3.new(0,0,0)
+				newVelocity = Vector3.new(0,0,0)
 			end
+
+			if flyBoostActive then
+				newVelocity = newVelocity + Vector3.new(0, 4, 0)
+				flyBoostActive = false
+			end
+			bv.velocity = newVelocity
 
 			bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
 		end
@@ -360,6 +366,50 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
 		toggleFly()
 	elseif input.KeyCode == Enum.KeyCode.Space and nowe == true then
 		flyBoostActive = true
+	elseif input.KeyCode == Enum.KeyCode.R then
+		speeds = speeds + 1
+		speed.Text = speeds
+		if nowe == true then
+			tpwalking = false
+			for i = 1, speeds do
+				spawn(function()
+					local hb = game:GetService("RunService").Heartbeat
+					tpwalking = true
+					local chr = game.Players.LocalPlayer.Character
+					local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+					while tpwalking and hb:Wait() and chr and hum and hum.Parent do
+						if hum.MoveDirection.Magnitude > 0 then
+							chr:TranslateBy(hum.MoveDirection)
+						end
+					end
+				end)
+			end
+		end
+	elseif input.KeyCode == Enum.KeyCode.Q then
+		if speeds == 1 then
+			speed.Text = 'cannot be less than 1'
+			wait(1)
+			speed.Text = speeds
+		else
+			speeds = speeds - 1
+			speed.Text = speeds
+			if nowe == true then
+				tpwalking = false
+				for i = 1, speeds do
+					spawn(function()
+						local hb = game:GetService("RunService").Heartbeat
+						tpwalking = true
+						local chr = game.Players.LocalPlayer.Character
+						local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+						while tpwalking and hb:Wait() and chr and hum and hum.Parent do
+							if hum.MoveDirection.Magnitude > 0 then
+								chr:TranslateBy(hum.MoveDirection)
+							end
+						end
+					end)
+				end
+			end
+		end
 	end
 end)
 

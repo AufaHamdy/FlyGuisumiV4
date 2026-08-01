@@ -175,6 +175,7 @@ local function resetFlySettings()
 		hum.JumpPower = defaultJumpPower
 		hum.PlatformStand = false
 		hum.AutoRotate = true
+		hum:ChangeState(Enum.HumanoidStateType.Running)
 	end
 	if hrp then
 		hrp.Velocity = Vector3.new(0,0,0)
@@ -217,7 +218,7 @@ local function toggleFly()
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated,true)
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics,true)
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming,true)
-		speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
+		speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
 	else 
 		nowe = true
 

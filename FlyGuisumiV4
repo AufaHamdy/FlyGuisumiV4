@@ -126,7 +126,8 @@ mini2.TextSize = 40
 mini2.Position = UDim2.new(0, 44, -1, 57)
 mini2.Visible = false
 
-speeds = 1
+local defaultSpeeds = 1
+local speeds = defaultSpeeds
 
 local speaker = game:GetService("Players").LocalPlayer
 
@@ -151,6 +152,7 @@ local function toggleFly()
 
 	if nowe == true then
 		nowe = false
+		flyBoostActive = false
 
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing,true)
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown,true)
@@ -168,6 +170,9 @@ local function toggleFly()
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics,true)
 		speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming,true)
 		speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
+		-- reset to default when fly is turned off
+		speeds = defaultSpeeds
+		speed.Text = speeds
 	else 
 		nowe = true
 

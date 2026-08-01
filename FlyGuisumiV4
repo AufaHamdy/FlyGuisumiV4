@@ -150,6 +150,19 @@ local ctrl = {f = 0, b = 0, l = 0, r = 0}
 local lastctrl = {f = 0, b = 0, l = 0, r = 0}
 local flyControlConnection
 local flyControlEndedConnection
+local flyKeys = {w = false, s = false, a = false, d = false}
+
+local function updateFlyControl()
+	if flyKeys.s then
+		ctrl.f = 0
+		ctrl.b = -1
+	else
+		ctrl.b = 0
+		ctrl.f = 1
+	end
+	ctrl.l = flyKeys.a and -1 or 0
+	ctrl.r = flyKeys.d and 1 or 0
+end
 
 local function bindFlyControls()
 	if flyControlConnection then
@@ -163,14 +176,15 @@ local function bindFlyControls()
 
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == Enum.KeyCode.W then
-				ctrl.f = 1
+				flyKeys.w = true
 			elseif input.KeyCode == Enum.KeyCode.S then
-				ctrl.b = -1
+				flyKeys.s = true
 			elseif input.KeyCode == Enum.KeyCode.A then
-				ctrl.l = -1
+				flyKeys.a = true
 			elseif input.KeyCode == Enum.KeyCode.D then
-				ctrl.r = 1
+				flyKeys.d = true
 			end
+			updateFlyControl()
 		end
 	end)
 
@@ -181,14 +195,15 @@ local function bindFlyControls()
 
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == Enum.KeyCode.W then
-				ctrl.f = 0
+				flyKeys.w = false
 			elseif input.KeyCode == Enum.KeyCode.S then
-				ctrl.b = 0
+				flyKeys.s = false
 			elseif input.KeyCode == Enum.KeyCode.A then
-				ctrl.l = 0
+				flyKeys.a = false
 			elseif input.KeyCode == Enum.KeyCode.D then
-				ctrl.r = 0
+				flyKeys.d = false
 			end
+			updateFlyControl()
 		end
 	end)
 end
@@ -219,6 +234,11 @@ local function toggleFly()
 		return
 	else 
 		nowe = true
+		ctrl = {f = 1, b = 0, l = 0, r = 0}
+		flyKeys.w = false
+		flyKeys.s = false
+		flyKeys.a = false
+		flyKeys.d = false
 		bindFlyControls()
 
 
@@ -275,8 +295,8 @@ local function toggleFly()
 		local torso = plr.Character.Torso
 		local flying = true
 		local deb = true
-		ctrl = {f = 0, b = 0, l = 0, r = 0}
-		lastctrl = {f = 0, b = 0, l = 0, r = 0}
+		ctrl = {f = 1, b = 0, l = 0, r = 0}
+		lastctrl = {f = 1, b = 0, l = 0, r = 0}
 		local maxspeed = 50
 		local speed = 0
 
@@ -337,8 +357,8 @@ local function toggleFly()
 		local UpperTorso = plr.Character.UpperTorso
 		local flying = true
 		local deb = true
-		ctrl = {f = 0, b = 0, l = 0, r = 0}
-		lastctrl = {f = 0, b = 0, l = 0, r = 0}
+		ctrl = {f = 1, b = 0, l = 0, r = 0}
+		lastctrl = {f = 1, b = 0, l = 0, r = 0}
 		local maxspeed = 50
 		local speed = 0
 

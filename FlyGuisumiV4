@@ -146,8 +146,6 @@ Frame.Active = true -- main = gui
 Frame.Draggable = true
 
 local UIS = game:GetService("UserInputService")
-local flyBoostActive = false
-
 local function respawnCharacter()
 	local player = game.Players.LocalPlayer
 	if player and player.Character then
@@ -260,10 +258,6 @@ local function toggleFly()
 				newVelocity = Vector3.new(0,0,0)
 			end
 
-			if flyBoostActive then
-				newVelocity = newVelocity + Vector3.new(0, 4, 0)
-				flyBoostActive = false
-			end
 			bv.velocity = newVelocity
 			--	game.Players.LocalPlayer.Character.Animate.Disabled = true
 			bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
@@ -326,10 +320,6 @@ local function toggleFly()
 				newVelocity = Vector3.new(0,0,0)
 			end
 
-			if flyBoostActive then
-				newVelocity = newVelocity + Vector3.new(0, 4, 0)
-				flyBoostActive = false
-			end
 			bv.velocity = newVelocity
 
 			bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
@@ -357,8 +347,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
 
 	if input.KeyCode == Enum.KeyCode.E then
 		toggleFly()
-	elseif input.KeyCode == Enum.KeyCode.Space and nowe == true then
-		flyBoostActive = true
 	elseif input.KeyCode == Enum.KeyCode.R then
 		speeds = speeds + 1
 		speed.Text = speeds
@@ -403,12 +391,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
 				end
 			end
 		end
-	end
-end)
-
-UIS.InputEnded:Connect(function(input, gameProcessed)
-	if not gameProcessed and input.KeyCode == Enum.KeyCode.Space then
-		flyBoostActive = false
 	end
 end)
 
